@@ -113,3 +113,73 @@ CREATE INDEX idx_users_is_active ON users(is_active);
 CREATE INDEX idx_users_kd_departemen ON users(kd_departemen);
 CREATE INDEX idx_users_kd_jabatan ON users(kd_jabatan);
 CREATE INDEX idx_perusahaan_nama ON perusahaan(nama_perusahaan);
+
+
+-- Absensi table
+CREATE TABLE IF NOT EXISTS absensi (
+    id_absensi INT AUTO_INCREMENT PRIMARY KEY,
+    id_user VARCHAR(36) NOT NULL,
+    tanggal DATE NOT NULL,
+    jam_masuk TIME,
+    jam_keluar TIME,
+    status VARCHAR(20),
+    keterangan VARCHAR(255),
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+-- Cuti table
+CREATE TABLE IF NOT EXISTS cuti (
+    id_cuti INT AUTO_INCREMENT PRIMARY KEY,
+    id_user VARCHAR(36) NOT NULL,
+    tanggal_pengajuan DATE NOT NULL,
+    tanggal_mulai DATE NOT NULL,
+    tanggal_selesai DATE NOT NULL,
+    jenis_cuti VARCHAR(50),
+    status VARCHAR(20),
+    keterangan VARCHAR(255),
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+-- Gaji table
+CREATE TABLE IF NOT EXISTS gaji (
+    id_gaji INT AUTO_INCREMENT PRIMARY KEY,
+    id_user VARCHAR(36) NOT NULL,
+    bulan INT NOT NULL,
+    tahun INT NOT NULL,
+    jumlah DECIMAL(15,2) NOT NULL,
+    tanggal_pembayaran DATE,
+    keterangan VARCHAR(255),
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+-- Riwayat Jabatan table
+CREATE TABLE IF NOT EXISTS riwayat_jabatan (
+    id_riwayat INT AUTO_INCREMENT PRIMARY KEY,
+    id_user VARCHAR(36) NOT NULL,
+    kd_jabatan INT,
+    tanggal_mulai DATE NOT NULL,
+    tanggal_selesai DATE,
+    keterangan VARCHAR(255),
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE,
+    FOREIGN KEY (kd_jabatan) REFERENCES jabatan(kd_jabatan) ON DELETE SET NULL
+);
+
+-- Status Absen table
+CREATE TABLE IF NOT EXISTS status_absen (
+    kd_status INT AUTO_INCREMENT PRIMARY KEY,
+    nama_status VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- Presensi table
+CREATE TABLE IF NOT EXISTS presensi (
+    id_presensi INT AUTO_INCREMENT PRIMARY KEY,
+    id_user VARCHAR(36) NOT NULL,
+    tgl_absensi INT NOT NULL, -- Format: YYYYMMDD
+    jam_masuk VARCHAR(8),
+    jam_keluar VARCHAR(8),
+    kd_status INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE,
+    FOREIGN KEY (kd_status) REFERENCES status_absen(kd_status) ON DELETE SET NULL
+);
