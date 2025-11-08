@@ -1,16 +1,17 @@
 package com.api.employee.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.InvalidKeyException;
-import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
@@ -46,11 +47,11 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
         return Jwts.builder()
-                .subject(email)
-                .claims(Map.of("profile", profile))
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey(), Jwts.SIG.HS512)
+                .setSubject(email)
+                .addClaims(Map.of("profile", profile))
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -60,11 +61,11 @@ public class JwtTokenProvider {
      * @return The email associated with the token.
      */
     public String getEmailFromToken(String token) {
-        var claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    Claims claims = Jwts.parser()
+        .setSigningKey(getSigningKey())
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
         return claims.getSubject();
     }
 
@@ -74,11 +75,11 @@ public class JwtTokenProvider {
      * @return The profile/role associated with the token.
      */
     public String getProfileFromToken(String token) {
-        var claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    Claims claims = Jwts.parser()
+        .setSigningKey(getSigningKey())
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
         return claims.get("profile", String.class);
     }
 
@@ -89,19 +90,17 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token);
+        Jwts.parser()
+            .setSigningKey(getSigningKey())
+            .build()
+            .parseClaimsJws(token);
             return true;
-        } catch (SignatureException | InvalidKeyException | MalformedJwtException e) {
-            System.err.println("Invalid JWT Signature/Format: " + e.getMessage());
         } catch (ExpiredJwtException e) {
             System.err.println("Expired JWT Token: " + e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            System.err.println("Unsupported JWT: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            System.err.println("JWT Claims string is empty: " + e.getMessage());
+        } catch (MalformedJwtException | UnsupportedJwtException e) {
+            System.err.println("Invalid/Unsupported JWT: " + e.getMessage());
+        } catch (JwtException | IllegalArgumentException e) {
+            System.err.println("JWT validation error: " + e.getMessage());
         }
         return false;
     }

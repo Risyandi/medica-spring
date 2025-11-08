@@ -78,18 +78,26 @@ public class AuthController {
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody ChangePasswordRequest request) {
         try {
-            // Extract token from Authorization header
-            String token = authHeader.substring("Bearer ".length());
-            
-            if (!jwtTokenProvider.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(ApiResponse.<String>builder()
-                                .success(false)
-                                .message("Token tidak valid")
-                                .build());
-            }
-            
-            String email = jwtTokenProvider.getEmailFromToken(token);
+        // Validate and extract token from Authorization header
+        if (authHeader == null || authHeader.trim().isEmpty() || !authHeader.startsWith("Bearer ")) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse.<String>builder()
+                .success(false)
+                .message("Authorization header must be provided and start with 'Bearer '")
+                .build());
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
+
+        if (!jwtTokenProvider.validateToken(token)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse.<String>builder()
+                .success(false)
+                .message("Token tidak valid")
+                .build());
+        }
+
+        String email = jwtTokenProvider.getEmailFromToken(token);
             ApiResponse<String> response = authService.changePassword(email, request);
             
             return ResponseEntity.ok(response);
