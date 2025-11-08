@@ -50,15 +50,17 @@ INSERT INTO absensi (id_user, tanggal, jam_masuk, jam_keluar, status, keterangan
 ('4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s', CURDATE(), '07:45:00', '17:00:00', 'Hadir', 'Datang lebih awal');
 
 -- Insert sample Cuti data
-INSERT INTO cuti (id_user, tanggal_pengajuan, tanggal_mulai, tanggal_selesai, jenis_cuti, status, keterangan) VALUES 
-('2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q', DATE_SUB(CURDATE(), INTERVAL 7 DAY), DATE_ADD(CURDATE(), INTERVAL 1 DAY), DATE_ADD(CURDATE(), INTERVAL 3 DAY), 'Tahunan', 'Disetujui', 'Cuti tahunan'),
-('3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', DATE_SUB(CURDATE(), INTERVAL 14 DAY), DATE_ADD(CURDATE(), INTERVAL 7 DAY), DATE_ADD(CURDATE(), INTERVAL 8 DAY), 'Sakit', 'Disetujui', 'Cuti sakit dengan surat dokter');
+-- Note: V1 schema uses `id_jenis_cuti` (FK) instead of a string `jenis_cuti`. Use the correct id values inserted in V1 (1=Tahunan,2=Melahirkan,3=Sakit,4=Penting).
+INSERT INTO cuti (id_user, id_jenis_cuti, tanggal_pengajuan, tanggal_mulai, tanggal_selesai, status, keterangan) VALUES 
+('2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q', 1, DATE_SUB(CURDATE(), INTERVAL 7 DAY), DATE_ADD(CURDATE(), INTERVAL 1 DAY), DATE_ADD(CURDATE(), INTERVAL 3 DAY), 'Disetujui', 'Cuti tahunan'),
+('3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', 3, DATE_SUB(CURDATE(), INTERVAL 14 DAY), DATE_ADD(CURDATE(), INTERVAL 7 DAY), DATE_ADD(CURDATE(), INTERVAL 8 DAY), 'Disetujui', 'Cuti sakit dengan surat dokter');
 
 -- Insert sample Gaji data
-INSERT INTO gaji (id_user, bulan, tahun, jumlah, tanggal_pembayaran, keterangan) VALUES 
-('2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q', MONTH(CURDATE()), YEAR(CURDATE()), 15000000.00, CURDATE(), 'Gaji bulan ini'),
-('3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', MONTH(CURDATE()), YEAR(CURDATE()), 8000000.00, CURDATE(), 'Gaji bulan ini'),
-('4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s', MONTH(CURDATE()), YEAR(CURDATE()), 20000000.00, CURDATE(), 'Gaji bulan ini');
+-- V1 `gaji` table expects columns like gaji_pokok, total_tunjangan, total_potongan, total_lembur, jumlah_bersih. Populate those accordingly.
+INSERT INTO gaji (id_user, bulan, tahun, gaji_pokok, total_tunjangan, total_potongan, total_lembur, jumlah_bersih, tanggal_pembayaran, keterangan) VALUES 
+('2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q', MONTH(CURDATE()), YEAR(CURDATE()), 15000000.00, 0.00, 0.00, 0.00, 15000000.00, CURDATE(), 'Gaji bulan ini'),
+('3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', MONTH(CURDATE()), YEAR(CURDATE()), 8000000.00, 0.00, 0.00, 0.00, 8000000.00, CURDATE(), 'Gaji bulan ini'),
+('4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s', MONTH(CURDATE()), YEAR(CURDATE()), 20000000.00, 0.00, 0.00, 0.00, 20000000.00, CURDATE(), 'Gaji bulan ini');
 
 -- Insert sample Riwayat Jabatan data
 INSERT INTO riwayat_jabatan (id_user, kd_jabatan, tanggal_mulai, tanggal_selesai, keterangan) VALUES 
@@ -68,6 +70,6 @@ INSERT INTO riwayat_jabatan (id_user, kd_jabatan, tanggal_mulai, tanggal_selesai
 
 -- Insert sample Presensi data
 INSERT INTO presensi (id_user, tgl_absensi, jam_masuk, jam_keluar, kd_status) VALUES 
-('2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q', CONCAT(YEAR(CURDATE()), LPAD(MONTH(CURDATE()), 2, '0'), LPAD(DAY(CURDATE()), 2, '0')), '08:00', '17:00', 1),
-('3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', CONCAT(YEAR(CURDATE()), LPAD(MONTH(CURDATE()), 2, '0'), LPAD(DAY(CURDATE()), 2, '0')), '08:15', '17:30', 1),
-('4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s', CONCAT(YEAR(CURDATE()), LPAD(MONTH(CURDATE()), 2, '0'), LPAD(DAY(CURDATE()), 2, '0')), '07:45', '17:00', 1);
+('2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q', CAST(DATE_FORMAT(CURDATE(), '%Y%m%d') AS UNSIGNED), '08:00', '17:00', 1),
+('3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', CAST(DATE_FORMAT(CURDATE(), '%Y%m%d') AS UNSIGNED), '08:15', '17:30', 1),
+('4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s', CAST(DATE_FORMAT(CURDATE(), '%Y%m%d') AS UNSIGNED), '07:45', '17:00', 1);
