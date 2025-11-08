@@ -85,3 +85,9 @@ Modify `application.yml` to set up your environment variables, database connecti
 ## Contributing
 
 Feel free to fork the repository and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
+
+## Demo Account
+- Admin: admin@medicahealth.com / password123
+- HR: hr.manager@medicahealth.com / password123
+- IT: it.staff@medicahealth.com / password123
+- Finance: finance.manager@medicahealth.com / password123
