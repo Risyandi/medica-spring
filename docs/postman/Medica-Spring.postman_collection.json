@@ -1,0 +1,354 @@
+{
+	"info": {
+		"_postman_id": "8f2e4b3a-5c3e-4b1a-9f2e-4b3a5c3e4b1a",
+		"name": "Medica-Spring",
+		"description": "Collection for testing Medica Spring API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/health",
+					"host": ["{{base_url}}"],
+					"path": ["api", "health"]
+				},
+				"description": "Check if the service is running"
+			}
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Init Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"namaPerusahaan\": \"Your Company Name\",\n    \"email\": \"admin@company.com\",\n    \"password\": \"yourpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/init-data",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "init-data"]
+						},
+						"description": "Initialize data - Create admin account for new company"
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@company.com\",\n    \"password\": \"yourpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login to get JWT token"
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"oldPassword\": \"oldpassword\",\n    \"newPassword\": \"newpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/ubah-password-sendiri",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "ubah-password-sendiri"]
+						},
+						"description": "Change user's own password"
+					}
+				}
+			]
+		},
+		{
+			"name": "Employee Management",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/daftar",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "daftar"]
+						},
+						"description": "Get list of all employees"
+					}
+				},
+				{
+					"name": "Add Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nama\": \"John Doe\",\n    \"email\": \"john.doe@company.com\",\n    \"password\": \"password123\",\n    \"kdJabatan\": \"JAB001\",\n    \"kdDepartemen\": \"DEP001\",\n    \"kdJenisKelamin\": \"L\",\n    \"kdPendidikan\": \"S1\",\n    \"tempatLahir\": \"Jakarta\",\n    \"tanggalLahir\": \"1990-01-01\",\n    \"alamat\": \"Jl. Example No. 123\",\n    \"noHp\": \"08123456789\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/admin-tambah-pegawai",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "admin-tambah-pegawai"]
+						},
+						"description": "Add new employee (Admin only)"
+					}
+				},
+				{
+					"name": "Update Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idUser\": \"USER001\",\n    \"nama\": \"John Doe Updated\",\n    \"kdJabatan\": \"JAB001\",\n    \"kdDepartemen\": \"DEP001\",\n    \"kdJenisKelamin\": \"L\",\n    \"kdPendidikan\": \"S1\",\n    \"tempatLahir\": \"Jakarta\",\n    \"tanggalLahir\": \"1990-01-01\",\n    \"alamat\": \"Jl. Example No. 123 Updated\",\n    \"noHp\": \"08123456789\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/admin-ubah-pegawai",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "admin-ubah-pegawai"]
+						},
+						"description": "Update employee details (Admin only)"
+					}
+				},
+				{
+					"name": "Update Employee Photo (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "idUser",
+									"value": "USER001",
+									"type": "text"
+								},
+								{
+									"key": "namaFile",
+									"value": "photo.jpg",
+									"type": "text"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/admin-ubah-photo",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "admin-ubah-photo"]
+						},
+						"description": "Update employee photo (Admin only)"
+					}
+				},
+				{
+					"name": "Update Own Photo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "idUser",
+									"value": "USER001",
+									"type": "text"
+								},
+								{
+									"key": "namaFile",
+									"value": "photo.jpg",
+									"type": "text"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/ubah-photo",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "ubah-photo"]
+						},
+						"description": "Update user's own photo"
+					}
+				}
+			]
+		},
+		{
+			"name": "Combo Data",
+			"item": [
+				{
+					"name": "Get Jabatan Combo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/combo/jabatan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "combo", "jabatan"]
+						},
+						"description": "Get list of job positions"
+					}
+				},
+				{
+					"name": "Get Departemen Combo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/combo/departemen",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "combo", "departemen"]
+						},
+						"description": "Get list of departments"
+					}
+				},
+				{
+					"name": "Get Pendidikan Combo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/combo/pendidikan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "combo", "pendidikan"]
+						},
+						"description": "Get list of education levels"
+					}
+				},
+				{
+					"name": "Get Jenis Kelamin Combo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/combo/jenis-kelamin",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "combo", "jenis-kelamin"]
+						},
+						"description": "Get list of gender options"
+					}
+				},
+				{
+					"name": "Get Departemen HRD",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pegawai/combo/departemen-hrd",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pegawai", "combo", "departemen-hrd"]
+						},
+						"description": "Get list of HRD department staff"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "token",
+			"value": "your_jwt_token_here"
+		}
+	]
+}
